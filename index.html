@@ -1,0 +1,455 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#151515">
+<title>MODA IMPORT</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f4f6;color:#222;font-family:Arial,sans-serif}
+header{background:#171717;color:white;padding:20px}
+header h1{margin:0;letter-spacing:2px}
+header p{color:#bbb;font-size:13px;margin:6px 0 0}
+nav{display:flex;overflow-x:auto;background:#252525;padding:8px;gap:6px}
+nav button{border:0;background:#3a3a3a;color:white;padding:12px;border-radius:8px;white-space:nowrap}
+nav button.active{background:#c6a15b;color:#111;font-weight:bold}
+main{max-width:900px;margin:auto;padding:12px}
+.page{display:none}.page.active{display:block}
+.card{background:white;padding:15px;border-radius:12px;margin-bottom:12px;box-shadow:0 2px 6px #00008}
+h2{font-size:19px;margin-top:4px}
+label{display:block;margin:12px 0 5px;font-size:13px}
+input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px}
+.btn{width:100%;padding:13px;border:0;border-radius:9px;background:#222;color:white;margin-top:12px;font-weight:bold}
+.gold{background:#c6a15b;color:#111}
+.red{background:#a83232;color:white}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stat{background:white;padding:14px;border-radius:10px}
+.stat small{color:#777}
+.stat strong{display:block;font-size:19px;margin-top:7px;overflow-wrap:anywhere}
+.item{padding:12px 0;border-bottom:1px solid #eee}
+.item button{width:auto;padding:8px;margin-top:8px}
+table{width:100%;font-size:12px}
+footer{text-align:center;padding:20px;color:#888;font-size:12px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>MODA IMPORT</h1>
+<p>Importação • Stock • Vendas • Lucros</p>
+</header>
+
+<nav>
+<button class="active" onclick="tab('home',this)">Resumo</button>
+<button onclick="tab('products',this)">Produtos</button>
+<button onclick="tab('imports',this)">Importações</button>
+<button onclick="tab('calc',this)">Calculadora</button>
+<button onclick="tab('sales',this)">Vendas</button>
+<button onclick="tab('expenses',this)">Despesas</button>
+<button onclick="tab('backup',this)">Backup</button>
+</nav>
+
+<main>
+
+<section id="home" class="page active">
+<h2>Painel do negócio</h2>
+<div class="grid">
+<div class="stat"><small>Investimento total</small><strong id="invest">0 MT</strong></div>
+<div class="stat"><small>Stock atual</small><strong id="stockvalue">0 MT</strong></div>
+<div class="stat"><small>Vendas totais</small><strong id="totalsales">0 MT</strong></div>
+<div class="stat"><small>Lucro líquido</small><strong id="netprofit">0 MT</strong></div>
+<div class="stat"><small>Produtos registados</small><strong id="productcount">0</strong></div>
+<div class="stat"><small>Despesas</small><strong id="totalexpenses">0 MT</strong></div>
+</div>
+<div class="card">
+<h3>⚠️ Stock baixo</h3>
+<div id="lowstock"></div>
+</div>
+<div class="card">
+<h3>Últimas vendas</h3>
+<div id="lastsales"></div>
+</div>
+</section>
+
+<section id="products" class="page">
+<div class="card">
+<h2>Novo produto</h2>
+<label>Nome</label>
+<input id="pname" placeholder="Ex: T-shirt, sapatilha">
+<label>Categoria</label>
+<select id="pcat">
+<option>Roupa</option>
+<option>Sapatos</option>
+<option>Brincos</option>
+<option>Acessórios</option>
+<option>Bolsas</option>
+<option>Outros</option>
+</select>
+<label>Quantidade</label>
+<input id="pqty" type="number" min="0" value="1">
+<label>Custo de compra por unidade (MT)</label>
+<input id="pcost" type="number" min="0" value="0">
+<label>Transporte e taxas por unidade (MT)</label>
+<input id="pextra" type="number" min="0" value="0">
+<label>Preço de venda por unidade (MT)</label>
+<input id="pprice" type="number" min="0" value="0">
+<button class="btn gold" onclick="addProduct()">Guardar produto</button>
+</div>
+<div class="card">
+<h2>Produtos e stock</h2>
+<div id="plist"></div>
+</div>
+</section>
+
+<section id="imports" class="page">
+<div class="card">
+<h2>Registar importação</h2>
+<label>Fornecedor / Loja</label>
+<input id="isupplier" placeholder="Ex: AliExpress, SHEIN, Alibaba">
+<label>Descrição da importação</label>
+<input id="idesc" placeholder="Ex: 20 camisas e 10 pares de sapatos">
+<label>Valor dos produtos (MT)</label>
+<input id="igoods" type="number" min="0" value="0">
+<label>Frete / transporte (MT)</label>
+<input id="iship" type="number" min="0" value="0">
+<label>Taxas / impostos (MT)</label>
+<input id="ifees" type="number" min="0" value="0">
+<label>Outros custos (MT)</label>
+<input id="iother" type="number" min="0" value="0">
+<button class="btn gold" onclick="addImport()">Guardar importação</button>
+</div>
+<div class="card">
+<h2>Histórico de importações</h2>
+<div id="ilist"></div>
+</div>
+</section>
+
+<section id="calc" class="page">
+<div class="card">
+<h2>Calculadora de importação</h2>
+<label>Valor total dos produtos (MT)</label>
+<input id="cgoods" type="number" value="0">
+<label>Transporte (MT)</label>
+<input id="cship" type="number" value="0">
+<label>Taxas e impostos (MT)</label>
+<input id="cfees" type="number" value="0">
+<label>Outros custos (MT)</label>
+<input id="cother" type="number" value="0">
+<label>Quantidade total de peças</label>
+<input id="cqty" type="number" value="1">
+<label>Margem de lucro desejada (%)</label>
+<input id="cmargin" type="number" value="50">
+<button class="btn gold" onclick="calculate()">Calcular preço</button>
+<div id="calcresult"></div>
+</div>
+</section>
+
+<section id="sales" class="page">
+<div class="card">
+<h2>Registar venda</h2>
+<label>Produto</label>
+<select id="sproduct"></select>
+<label>Quantidade</label>
+<input id="sqty" type="number" min="1" value="1">
+<label>Preço de venda por unidade (MT)</label>
+<input id="sprice" type="number" min="0">
+<button class="btn gold" onclick="addSale()">Confirmar venda</button>
+</div>
+<div class="card">
+<h2>Histórico de vendas</h2>
+<div id="slist"></div>
+</div>
+</section>
+
+<section id="expenses" class="page">
+<div class="card">
+<h2>Nova despesa</h2>
+<label>Descrição</label>
+<input id="edesc" placeholder="Ex: Transporte, embalagem, publicidade">
+<label>Valor (MT)</label>
+<input id="evalue" type="number" min="0">
+<button class="btn gold" onclick="addExpense()">Guardar despesa</button>
+</div>
+<div class="card">
+<h2>Histórico de despesas</h2>
+<div id="elist"></div>
+</div>
+</section>
+
+<section id="backup" class="page">
+<div class="card">
+<h2>Segurança dos dados</h2>
+<p>Faz backup regularmente para não perderes os teus dados.</p>
+<button class="btn gold" onclick="exportBackup()">⬇ Exportar backup</button>
+<label>Restaurar backup</label>
+<input type="file" id="backupfile" accept=".json">
+<button class="btn" onclick="importBackup()">Restaurar dados</button>
+<button class="btn red" onclick="clearData()">Apagar todos os dados</button>
+</div>
+</section>
+
+</main>
+
+<footer>MODA IMPORT • Sistema de gestão</footer>
+
+<script>
+const read=k=>JSON.parse(localStorage.getItem(k)||'[]');
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+let products=read('mi_products');
+let sales=read('mi_sales');
+let expenses=read('mi_expenses');
+let imports=read('mi_imports');
+
+function money(v){
+ return Number(v||0).toLocaleString('pt-MZ',{maximumFractionDigits:2})+' MT';
+}
+
+function tab(id,b){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ b.classList.add('active');
+ render();
+}
+
+function addProduct(){
+ const name=document.getElementById('pname').value.trim();
+ const qty=Number(document.getElementById('pqty').value);
+ const cost=Number(document.getElementById('pcost').value);
+ const extra=Number(document.getElementById('pextra').value);
+ const price=Number(document.getElementById('pprice').value);
+ const cat=document.getElementById('pcat').value;
+
+ if(!name)return alert('Introdu o nome do produto.');
+ if(qty<0||cost<0||extra<0||price<0)return alert('Valores inválidos.');
+
+ products.push({id:Date.now(),name,cat,qty,cost,extra,price});
+ save('mi_products',products);
+
+ document.getElementById('pname').value='';
+ document.getElementById('pqty').value=1;
+ document.getElementById('pcost').value=0;
+ document.getElementById('pextra').value=0;
+ document.getElementById('pprice').value=0;
+
+ render();
+ alert('Produto guardado com sucesso!');
+}
+
+function addSale(){
+ const id=Number(document.getElementById('sproduct').value);
+ const q=Number(document.getElementById('sqty').value);
+ const price=Number(document.getElementById('sprice').value);
+ const p=products.find(x=>x.id===id);
+
+ if(!p)return alert('Escolhe um produto.');
+ if(q<=0||q>p.qty)return alert('Quantidade inválida ou stock insuficiente.');
+ if(price<=0)return alert('Introduz o preço de venda.');
+
+ const cost=q*(p.cost+p.extra);
+ p.qty-=q;
+
+ sales.unshift({
+ name:p.name,qty:q,price,
+ total:q*price,cost,
+ date:new Date().toLocaleString('pt-MZ')
+ });
+
+ save('mi_products',products);
+ save('mi_sales',sales);
+
+ document.getElementById('sqty').value=1;
+ document.getElementById('sprice').value='';
+ render();
+ alert('Venda registada com sucesso!');
+}
+
+function addExpense(){
+ const desc=document.getElementById('edesc').value.trim();
+ const value=Number(document.getElementById('evalue').value);
+
+ if(!desc||value<=0)return alert('Preenche correctamente a despesa.');
+
+ expenses.unshift({desc,value,date:new Date().toLocaleString('pt-MZ')});
+ save('mi_expenses',expenses);
+
+ document.getElementById('edesc').value='';
+ document.getElementById('evalue').value='';
+ render();
+ alert('Despesa guardada!');
+}
+
+function addImport(){
+ const supplier=document.getElementById('isupplier').value.trim();
+ const desc=document.getElementById('idesc').value.trim();
+ const goods=Number(document.getElementById('igoods').value);
+ const ship=Number(document.getElementById('iship').value);
+ const fees=Number(document.getElementById('ifees').value);
+ const other=Number(document.getElementById('iother').value);
+
+ if(!supplier||!desc)return alert('Preenche o fornecedor e a descrição.');
+
+ imports.unshift({
+ supplier,desc,goods,ship,fees,other,
+ total:goods+ship+fees+other,
+ date:new Date().toLocaleString('pt-MZ')
+ });
+ save('mi_imports',imports);
+
+ ['isupplier','idesc','igoods','iship','ifees','iother'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(id==='isupplier'||id==='idesc')el.value='';
+  else el.value=0;
+ });
+ render();
+ alert('Importação guardada!');
+}
+
+function calculate(){
+ const goods=Number(document.getElementById('cgoods').value);
+ const ship=Number(document.getElementById('cship').value);
+ const fees=Number(document.getElementById('cfees').value);
+ const other=Number(document.getElementById('cother').value);
+ const qty=Number(document.getElementById('cqty').value);
+ const margin=Number(document.getElementById('cmargin').value);
+
+ if(qty<=0)return alert('Quantidade deve ser maior que zero.');
+
+ const total=goods+ship+fees+other;
+ const unit=total/qty;
+ const price=unit*(1+margin/100);
+ const profit=price-unit;
+
+ document.getElementById('calcresult').innerHTML=`
+ <div class="card">
+ <h3>Resultado do cálculo</h3>
+ Custo total: <b>${money(total)}</b><br><br>
+ Custo por peça: <b>${money(unit)}</b><br><br>
+ Preço de venda sugerido: <b>${money(price)}</b><br><br>
+ Lucro por peça: <b>${money(profit)}</b><br><br>
+ Lucro total estimado: <b>${money(profit*qty)}</b>
+ </div>`;
+}
+
+function deleteProduct(id){
+ if(!confirm('Eliminar este produto?'))return;
+ products=products.filter(p=>p.id!==id);
+ save('mi_products',products);
+ render();
+}
+
+function deleteSale(index){
+ if(!confirm('Eliminar este registo de venda?'))return;
+ const s=sales[index];
+ const p=products.find(x=>x.name===s.name);
+ if(p)p.qty+=s.qty;
+ sales.splice(index,1);
+ save('mi_products',products);
+ save('mi_sales',sales);
+ render();
+}
+
+function render(){
+ document.getElementById('plist').innerHTML=products.map(p=>`
+ <div class="item">
+ <b>${p.name}</b> — ${p.cat}<br>
+ Stock: ${p.qty}<br>
+ Custo unitário: ${money(p.cost+p.extra)}<br>
+ Venda: ${money(p.price)}<br>
+ <button class="btn red" onclick="deleteProduct(${p.id})">Eliminar</button>
+ </div>`).join('')||'Nenhum produto registado.';
+
+ document.getElementById('sproduct').innerHTML=
+ products.map(p=>`<option value="${p.id}">${p.name} (stock: ${p.qty})</option>`).join('');
+
+ document.getElementById('slist').innerHTML=sales.map((s,i)=>`
+ <div class="item">
+ ${s.date}<br>
+ <b>${s.name}</b> × ${s.qty}<br>
+ Total: ${money(s.total)}<br>
+ Lucro: ${money(s.total-s.cost)}<br>
+ <button class="btn red" onclick="deleteSale(${i})">Anular venda</button>
+ </div>`).join('')||'Nenhuma venda registada.';
+
+ document.getElementById('elist').innerHTML=expenses.map(e=>`
+ <div class="item">${e.date}<br>
+ ${e.desc}<br><b>${money(e.value)}</b></div>`).join('')||'Nenhuma despesa.';
+
+ document.getElementById('ilist').innerHTML=imports.map(i=>`
+ <div class="item">${i.date}<br>
+ <b>${i.supplier}</b><br>${i.desc}<br>
+ Total importação: <b>${money(i.total)}</b>
+ </div>`).join('')||'Nenhuma importação registada.';
+
+ const stock=products.reduce((a,p)=>a+p.qty*(p.cost+p.extra),0);
+ const totalSales=sales.reduce((a,s)=>a+s.total,0);
+ const gross=sales.reduce((a,s)=>a+(s.total-s.cost),0);
+ const exp=expenses.reduce((a,e)=>a+e.value,0);
+ const investment=products.reduce((a,p)=>a+(p.qty*(p.cost+p.extra)),0)
+ +sales.reduce((a,s)=>a+s.cost,0);
+
+ document.getElementById('invest').textContent=money(investment);
+ document.getElementById('stockvalue').textContent=money(stock);
+ document.getElementById('totalsales').textContent=money(totalSales);
+ document.getElementById('netprofit').textContent=money(gross-exp);
+ document.getElementById('productcount').textContent=products.length;
+ document.getElementById('totalexpenses').textContent=money(exp);
+
+ document.getElementById('lowstock').innerHTML=
+ products.filter(p=>p.qty<=3)
+ .map(p=>`${p.name} — ${p.qty} unidades`).join('<br>')||'Stock normal.';
+
+ document.getElementById('lastsales').innerHTML=
+ sales.slice(0,5).map(s=>`${s.name} — ${money(s.total)}`).join('<br>')||'Sem vendas.';
+}
+
+function exportBackup(){
+ const data={products,sales,expenses,imports};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='MODA_IMPORT_BACKUP.json';
+ a.click();
+ URL.revokeObjectURL(a.href);
+}
+
+function importBackup(){
+ const file=document.getElementById('backupfile').files[0];
+ if(!file)return alert('Escolhe um ficheiro de backup.');
+ const reader=new FileReader();
+ reader.onload=function(){
+  try{
+   const d=JSON.parse(reader.result);
+   if(!d.products||!d.sales||!d.expenses||!d.imports)
+    throw new Error('Formato inválido');
+   products=d.products;sales=d.sales;
+   expenses=d.expenses;imports=d.imports;
+   save('mi_products',products);
+   save('mi_sales',sales);
+   save('mi_expenses',expenses);
+   save('mi_imports',imports);
+   render();
+   alert('Backup restaurado com sucesso!');
+  }catch(e){alert('Ficheiro de backup inválido.');}
+ };
+ reader.readAsText(file);
+}
+
+function clearData(){
+ if(!confirm('ATENÇÃO! Apagar todos os produtos, vendas, importações e despesas?'))return;
+ products=[];sales=[];expenses=[];imports=[];
+ save('mi_products',products);
+ save('mi_sales',sales);
+ save('mi_expenses',expenses);
+ save('mi_imports',imports);
+ render();
+ alert('Dados apagados.');
+}
+
+render();
+</script>
+</body>
+</html>
