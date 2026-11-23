@@ -1,0 +1,179 @@
+ 
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#151515">
+<title>MODA IMPORT</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f4f6;font-family:Arial,sans-serif;color:#222}
+header{background:#171717;color:#fff;padding:22px 16px}
+header h1{margin:0;font-size:24px;letter-spacing:2px}
+header p{margin:7px 0 0;color:#bbb;font-size:12px}
+nav{display:flex;overflow:auto;background:#222;padding:8px;gap:6px}
+nav button{background:#333;color:white;border:0;padding:12px;border-radius:8px;white-space:nowrap}
+nav button.active{background:#c69b52;color:#111;font-weight:bold}
+main{padding:14px;max-width:850px;margin:auto}
+.page{display:none}.page.active{display:block}
+.card{background:white;padding:16px;border-radius:12px;margin-bottom:12px;box-shadow:0 2px 6px #00008}
+h2{font-size:19px;margin-top:5px}
+label{display:block;font-size:13px;margin:10px 0 5px}
+input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:15px}
+.btn{width:100%;padding:13px;border:0;border-radius:8px;background:#222;color:white;font-weight:bold;margin-top:12px}
+.gold{background:#c69b52;color:#111}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:white;padding:15px;border-radius:10px}
+.stat small{color:#666}
+.stat strong{display:block;font-size:20px;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+td,th{padding:9px 5px;border-bottom:1px solid #eee;text-align:left}
+.danger{color:#b22}
+.item{padding:12px 0;border-bottom:1px solid #eee}
+footer{text-align:center;color:#888;padding:25px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>MODA IMPORT</h1>
+<p>Gestão de importação • Moda • Stock • Vendas</p>
+</header>
+<nav>
+<button class="active" onclick="tab('home',this)">Resumo</button>
+<button onclick="tab('products',this)">Produtos</button>
+<button onclick="tab('calc',this)">Calculadora</button>
+<button onclick="tab('sales',this)">Vendas</button>
+<button onclick="tab('expenses',this)">Despesas</button>
+</nav>
+<main>
+
+<section id="home" class="page active">
+<h2>Resumo do negócio</h2>
+<div class="grid">
+<div class="stat"><small>Capital investido</small><strong id="invest">0 MT</strong></div>
+<div class="stat"><small>Valor de stock</small><strong id="stockvalue">0 MT</strong></div>
+<div class="stat"><small>Total de vendas</small><strong id="totalSales">0 MT</strong></div>
+<div class="stat"><small>Lucro estimado</small><strong id="profit">0 MT</strong></div>
+</div>
+<div class="card">
+<h3>Stock baixo</h3><div id="lowstock"></div>
+</div>
+<div class="card">
+<h3>Últimas vendas</h3><div id="lastsales"></div>
+</div>
+</section>
+
+<section id="products" class="page">
+<div class="card">
+<h2>Adicionar produto</h2>
+<label>Nome do produto</label><input id="pname" placeholder="Ex: T-shirt masculina">
+<label>Categoria</label>
+<select id="pcat"><option>Roupa</option><option>Sapatos</option><option>Brincos</option><option>Acessórios</option><option>Bolsas</option><option>Outros</option></select>
+<label>Quantidade inicial</label><input id="pqty" type="number" min="0" value="0">
+<label>Custo unitário de compra (MT)</label><input id="pcost" type="number" min="0">
+<label>Transporte e outros custos unitários (MT)</label><input id> 
+</label>
+<label>Preço de venda (MT)</label><input id="pprice" type="number" min="0">
+<button class="btn gold" onclick="addProduct()">Guardar produto</button>
+</div>
+<div class="card"><h2>Lista de produtos</h2><div id="plist"></div></div>
+</section>
+
+<section id="calc" class="page">
+<div class="card">
+<h2>Calculadora de importação</h2>
+<label>Preço total dos produtos (MT)</label><input id="cgoods" type="number" value="0">
+<label>Transporte (MT)</label><input id="cship" type="number" value="0">
+<label>Taxas / impostos / outros (MT)</label><input id="cfees" type="number" value="0">
+<label>Quantidade total de peças</label><input id="cqty" type="number" value="1">
+<label>Margem de lucro desejada (%)</label><input id="cmargin" type="number" value="50">
+<button class="btn gold" onclick="calculate()">Calcular</button>
+<div id="calcresult"></div>
+</div>
+</section>
+
+<section id="sales" class="page">
+<div class="card">
+<h2>Registar venda</h2>
+<label>Produto</label><select id="sproduct"></select>
+<label>Quantidade</label><input id="sqty" type="number" min="1" value="1">
+<label>Preço unitário da venda (MT)</label><input id>sprice</label>
+<button class="btn gold" onclick="addSale()">Confirmar venda</button>
+</div>
+<div class="card"><h2>Histórico de vendas</h2><div id="slist"></div></div>
+</section>
+
+<section id="expenses" class="page">
+<div class="card">
+<h2>Registar despesa</h2>
+<label>Descrição</label><input id="edesc" placeholder="Ex: Transporte, embalagem, internet">
+<label>Valor (MT)</label><input id="evalue" type="number" min="0">
+<button class="btn gold" onclick="addExpense()">Guardar despesa</button>
+</div>
+<div class="card"><h2>Despesas registadas</h2><div id="elist"></div></div>
+</section>
+</main>
+<footer>MODA IMPORT • Gestão do teu negócio</footer>
+<script>
+const get=(k)=>JSON.parse(localStorage.getItem(k)||'[]');
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+let products=get('products'),sales=get('sales'),expenses=get('expenses');
+
+function mt(v){return Number(v||0).toLocaleString('pt-MZ',{maximumFractionDigits:2})+' MT'}
+function tab(id,b){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');b.classList.add('active');
+ render();
+}
+function addProduct(){
+ let name=pname.value.trim();if(!name)return alert('Introduz o nome do produto.');
+ products.push({id:Date.now(),name,cat:pcat.value,qty:+pqty.value,cost:+pcost.value,extra:+document.getElementById('pextra').value||0,price:+pprice.value});
+ save('products',products);pname.value='';pqty.value=0;pcost.value=0;pprice.value=0;render();alert('Produto guardado!');
+}
+function addSale(){
+ let id=+sproduct.value,prod=products.find(p=>p.id===id),q=+sqty.value,price=+sprice.value;
+ if(!prod)return alert('Escolhe um produto.');
+ if(q<1||q>prod.qty)return alert('Stock insuficiente.');
+ if(price<=0)return alert('Introduz o preço de venda.');
+ prod.qty-=q;
+ sales.unshift({name:prod.name,q,price,total:q*price,cost:q*(prod.cost+prod.extra),date:new Date().toLocaleString('pt-MZ')});
+ save('products',products);save('sales',sales);
+ sqty.value=1;sprice.value='';render();alert('Venda registada!');
+}
+function addExpense(){
+ let d=edesc.value.trim(),v=+evalue.value;
+ if(!d||v<=0)return alert('Preenche a descrição e o valor.');
+ expenses.unshift({d,v,date:new Date().toLocaleString('pt-MZ')});
+ save('expenses',expenses);edesc.value='';evalue.value='';render();alert('Despesa guardada!');
+}
+function calculate(){
+ let goods=+cgoods.value,ship=+cship.value,fees=+cfees.value,q=+cqty.value,margin=+cmargin.value;
+ if(q<=0)return alert('Quantidade deve ser maior que zero.');
+ let total=goods+ship+fees,cost=total/q,price=cost*(1+margin/100);
+ calcresult.innerHTML=`<div class="card"><h3>Resultado</h3>
+ Custo total: <b>${mt(total)}</b><br>
+ Custo por peça: <b>${mt(cost)}</b><br>
+ Preço de venda sugerido: <b>${mt(price)}</b><br>
+ Lucro por peça: <b>${mt(price-cost)}</b><br>
+ Lucro total estimado: <b>${mt((price-cost)*q)}</b></div>`;
+}
+function render(){
+ plist.innerHTML=products.map(p=>`<div class="item"><b>${p.name}</b> (${p.cat})<br>Stock: ${p.qty} | Custo: ${mt(p.cost+p.extra)} | Venda: ${mt(p.price)}<br><button onclick="delProduct(${p.id})">Eliminar</button></div>`).join('')||'Nenhum produto.';
+ sproduct.innerHTML=products.map(p=>`<option value="${p.id}">${p.name} (stock ${p.qty})</option>`).join('');
+ slist.innerHTML=sales.map(s=>`<div class="item">${s.date}<br>${s.name} × ${s.q}<br>Total: ${mt(s.total)} | Lucro: ${mt(s.total-s.cost)}</div>`).join('')||'Nenhuma venda.';
+ elist.innerHTML=expenses.map(e=>`<div class="item">${e.date}<br>${e.d}<br>${mt(e.v)}</div>`).join('')||'Nenhuma despesa.';
+ let inv=products.reduce((a,p)=>a+p.qty*(p.cost+p.extra),0);
+ let sv=sales.reduce((a,s)=>a+s.total,0);
+ let prof=sales.reduce((a,s)=>a+s.total-s.cost,0)-expenses.reduce((a,e)=>a+e.v,0);
+ invest.textContent=mt(products.reduce((a,p)=>a+p.qty*(p.cost+p.extra),0)+sales.reduce((a,s)=>a+s.cost,0));
+ stockvalue.textContent=mt(inv);totalSales.textContent=mt(sv);profit.textContent=mt(prof);
+ lowstock.innerHTML=products.filter(p=>p.qty<=3).map(p=>`${p.name}: ${p.qty} unidades`).join('<br>')||'Stock normal.';
+ lastsales.innerHTML=sales.slice(0,5).map(s=>`${s.name} — ${mt(s.total)}`).join('<br>')||'Sem vendas.';
+}
+function delProduct(id){if(confirm('Eliminar produto?')){products=products.filter(p=>p.id!==id);save('products',products);render()}}
+render();
+</script>
+</body>
+</html>
